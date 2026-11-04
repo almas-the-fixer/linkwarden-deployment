@@ -57,3 +57,6 @@ prisma/dev.db
 .turbo
 
 service-account-file.json
+
+# For Kubernetes Secrets
+secret.yml
