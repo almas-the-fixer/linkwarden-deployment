@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: psql-statefulset
+spec:
+  serviceName: psql-headless-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: psql-db
+  template:
+    metadata:
+      labels:
+        app: psql-db
+    spec:
+      containers:
+        - name: postgres-container
+          image: postgres:16-alpine
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: linkwarden-secret
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi

@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: linkwarden-deployment
+  labels:
+    app: linkwarden
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: linkwarden
+  template:
+    metadata:
+      labels:
+        app: linkwarden
+    spec:
+      containers:
+        - name: linkwarden-container
+          image: ghcr.io/linkwarden/linkwarden:latest
+          envFrom:
+            - secretRef:
+                name: linkwarden-secret
+            - configMapRef:
+                name: linkwarden-config
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: linkwarden-data
+              mountPath: /data/data
+      volumes:
+        - name: linkwarden-data
+          persistentVolumeClaim:
+            claimName: linkwarden-pvc
